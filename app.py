@@ -1,6 +1,24 @@
 from flask import Flask, render_template
 
 app = Flask(__name__)
+app.config['DATABASE'] = 'expense_tracker.db'
+
+from database.db import close_db, init_db, seed_db
+
+app.teardown_appcontext(close_db)
+
+
+@app.cli.command('init-db')
+def init_db_command():
+    """Create all database tables."""
+    init_db()
+    seed_db()
+    print("Database initialised.")
+
+
+with app.app_context():
+    init_db()
+    seed_db()
 
 
 # ------------------------------------------------------------------ #
