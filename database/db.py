@@ -89,3 +89,10 @@ def create_user(name, email, password_hash):
         (name, email, password_hash)
     )
     db.commit()
+
+
+def get_user_by_id(user_id):
+    return get_db().execute(
+        "SELECT * FROM users WHERE id = ?",
+        (user_id,)
+    ).fetchone()
