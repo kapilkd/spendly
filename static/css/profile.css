@@ -1,0 +1,302 @@
+/* ------------------------------------------------------------------ */
+/* Category color tokens                                               */
+/* ------------------------------------------------------------------ */
+
+:root {
+    --cat-food:              var(--accent-2);
+    --cat-food-bg:           var(--accent-2-light);
+    --cat-shopping:          #6366f1;
+    --cat-shopping-bg:       #eef2ff;
+    --cat-utilities:         #0891b2;
+    --cat-utilities-bg:      #e0f7fa;
+    --cat-entertainment:     #7c3aed;
+    --cat-entertainment-bg:  #f5f3ff;
+    --cat-transport:         #0d9488;
+    --cat-transport-bg:      #f0fdf9;
+    --cat-healthcare:        var(--danger);
+    --cat-healthcare-bg:     var(--danger-light);
+}
+
+/* ------------------------------------------------------------------ */
+/* Page wrapper                                                        */
+/* ------------------------------------------------------------------ */
+
+.profile-page {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ------------------------------------------------------------------ */
+/* User info card                                                      */
+/* ------------------------------------------------------------------ */
+
+.profile-header {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.profile-avatar {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--paper-card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.profile-name {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    color: var(--ink);
+    margin-bottom: 0.2rem;
+}
+
+.profile-email {
+    font-size: 0.9rem;
+    color: var(--ink-muted);
+    margin-bottom: 0.2rem;
+}
+
+.profile-since {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+}
+
+/* ------------------------------------------------------------------ */
+/* Stats row                                                           */
+/* ------------------------------------------------------------------ */
+
+.profile-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.stat-card {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.stat-icon {
+    color: var(--accent);
+    width: 20px;
+    height: 20px;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--ink-muted);
+    font-weight: 500;
+}
+
+/* ------------------------------------------------------------------ */
+/* Two-column grid                                                     */
+/* ------------------------------------------------------------------ */
+
+.profile-grid {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+/* ------------------------------------------------------------------ */
+/* Profile cards                                                       */
+/* ------------------------------------------------------------------ */
+
+.profile-card {
+    background: var(--paper-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+
+.profile-card-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.profile-card-header h2 {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--ink);
+}
+
+.profile-card-body {
+    padding: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* Transaction table                                                   */
+/* ------------------------------------------------------------------ */
+
+.tx-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.tx-table thead th {
+    padding: 0.65rem 1.5rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: var(--paper);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.tx-table thead th:last-child { text-align: right; }
+
+.tx-table tbody tr {
+    border-bottom: 1px solid var(--border-soft);
+    transition: background 0.15s;
+}
+
+.tx-table tbody tr:last-child { border-bottom: none; }
+.tx-table tbody tr:hover { background: var(--paper); }
+
+.tx-table tbody td {
+    padding: 0.85rem 1.5rem;
+    color: var(--ink-soft);
+    vertical-align: middle;
+}
+
+.tx-date {
+    color: var(--ink-muted) !important;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.tx-amount {
+    text-align: right !important;
+    font-weight: 600;
+    color: var(--ink) !important;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+/* ------------------------------------------------------------------ */
+/* Category badges                                                     */
+/* ------------------------------------------------------------------ */
+
+.badge {
+    display: inline-block;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.badge-food          { background: var(--cat-food-bg);          color: var(--cat-food); }
+.badge-shopping      { background: var(--cat-shopping-bg);      color: var(--cat-shopping); }
+.badge-utilities     { background: var(--cat-utilities-bg);     color: var(--cat-utilities); }
+.badge-entertainment { background: var(--cat-entertainment-bg); color: var(--cat-entertainment); }
+.badge-transport     { background: var(--cat-transport-bg);     color: var(--cat-transport); }
+.badge-healthcare    { background: var(--cat-healthcare-bg);    color: var(--cat-healthcare); }
+
+/* ------------------------------------------------------------------ */
+/* Category breakdown                                                  */
+/* ------------------------------------------------------------------ */
+
+.profile-card-body .cat-bar-row {
+    padding: 0.85rem 1.5rem;
+    border-bottom: 1px solid var(--border-soft);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.profile-card-body .cat-bar-row:last-child { border-bottom: none; }
+
+.cat-bar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cat-bar-amount {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+}
+
+.cat-bar-track {
+    height: 6px;
+    background: var(--border-soft);
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.cat-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease;
+}
+
+.cat-fill-food          { background: var(--cat-food); }
+.cat-fill-shopping      { background: var(--cat-shopping); }
+.cat-fill-utilities     { background: var(--cat-utilities); }
+.cat-fill-entertainment { background: var(--cat-entertainment); }
+.cat-fill-transport     { background: var(--cat-transport); }
+.cat-fill-healthcare    { background: var(--cat-healthcare); }
+
+/* ------------------------------------------------------------------ */
+/* Responsive                                                          */
+/* ------------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+    .profile-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .tx-table-wrap {
+        overflow-x: auto;
+    }
+}

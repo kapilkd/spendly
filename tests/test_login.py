@@ -19,7 +19,7 @@ def test_valid_login_redirects(app, client):
         "password": "password1",
     })
     assert response.status_code == 302
-    assert response.headers["Location"].endswith("/")
+    assert response.headers["Location"].endswith("/profile")
 
 
 def test_valid_login_sets_session(app, client):
