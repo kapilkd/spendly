@@ -82,6 +82,36 @@ def get_user_by_email(email):
     ).fetchone()
 
 
+def get_summary_stats(user_id):
+    db = get_db()
+    row = db.execute(
+        """
+        SELECT COALESCE(SUM(amount), 0) AS total_spent,
+               COUNT(*)                 AS transaction_count
+        FROM   expenses
+        WHERE  user_id = ?
+        """,
+        (user_id,)
+    ).fetchone()
+    top_row = db.execute(
+        """
+        SELECT   category, SUM(amount) AS cat_total
+        FROM     expenses
+        WHERE    user_id = ?
+        GROUP BY category
+        ORDER BY cat_total DESC
+        LIMIT    1
+        """,
+        (user_id,)
+    ).fetchone()
+    top_category = top_row["category"] if top_row else "—"
+    return {
+        "total_spent":       f"₹{row['total_spent']:,.0f}",
+        "transaction_count": row["transaction_count"],
+        "top_category":      top_category,
+    }
+
+
 def create_user(name, email, password_hash):
     db = get_db()
     db.execute(
@@ -91,8 +121,72 @@ def create_user(name, email, password_hash):
     db.commit()
 
 
+def get_recent_transactions(user_id, limit=10):
+    rows = get_db().execute(
+        """
+        SELECT date, title, category, amount
+        FROM   expenses
+        WHERE  user_id = ?
+        ORDER  BY date DESC, id DESC
+        LIMIT  ?
+        """,
+        (user_id, limit)
+    ).fetchall()
+    return [
+        {
+            "date":     r["date"],
+            "title":    r["title"],
+            "category": r["category"],
+            "amount":   f"₹{r['amount']:,.0f}",
+        }
+        for r in rows
+    ]
+
+
 def get_user_by_id(user_id):
-    return get_db().execute(
-        "SELECT * FROM users WHERE id = ?",
+    from datetime import datetime
+    row = get_db().execute(
+        "SELECT id, name, email, created_at FROM users WHERE id = ?",
         (user_id,)
     ).fetchone()
+    if row is None:
+        return None
+    created_at = datetime.strptime(row["created_at"], "%Y-%m-%d %H:%M:%S")
+    return {
+        "id":           row["id"],
+        "name":         row["name"],
+        "email":        row["email"],
+        "member_since": created_at.strftime("%B %Y"),
+    }
+
+
+def get_category_breakdown(user_id):
+    rows = get_db().execute(
+        """
+        SELECT   category,
+                 SUM(amount) AS amount
+        FROM     expenses
+        WHERE    user_id = ?
+        GROUP BY category
+        ORDER BY amount DESC
+        """,
+        (user_id,)
+    ).fetchall()
+    if not rows:
+        return []
+    total = sum(r["amount"] for r in rows)
+    cats = [
+        {
+            "name":       r["category"],
+            "amount":     f"₹{r['amount']:,.0f}",
+            "percent":    int(r["amount"] / total * 100),
+            "_remainder": (r["amount"] / total * 100) % 1,
+        }
+        for r in rows
+    ]
+    deficit = 100 - sum(c["percent"] for c in cats)
+    for i in sorted(range(len(cats)), key=lambda i: cats[i]["_remainder"], reverse=True)[:deficit]:
+        cats[i]["percent"] += 1
+    for c in cats:
+        del c["_remainder"]
+    return cats

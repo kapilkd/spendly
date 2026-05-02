@@ -7,7 +7,10 @@ app = Flask(__name__)
 app.config['DATABASE'] = 'expense_tracker.db'
 app.secret_key = "spendly-dev-secret"  # replace with env var in production
 
-from database.db import close_db, init_db, seed_db, create_user, get_user_by_email, get_user_by_id
+from database.db import (
+    close_db, init_db, seed_db, create_user, get_user_by_email,
+    get_user_by_id, get_recent_transactions, get_summary_stats, get_category_breakdown,
+)
 
 app.teardown_appcontext(close_db)
 
@@ -106,33 +109,17 @@ def profile():
     if not session.get("user_id"):
         return redirect(url_for("login"))
 
+    db_user = get_user_by_id(session["user_id"])
+    name = db_user["name"] if db_user else session.get("user_name", "User")
     user = {
-        "name": session["user_name"],
-        "email": "demo@spendly.dev",
-        "member_since": "April 2026",
-        "initials": "".join(w[0].upper() for w in session["user_name"].split()[:2]),
+        "name":         name,
+        "email":        db_user["email"]        if db_user else "",
+        "member_since": db_user["member_since"] if db_user else "",
+        "initials":     "".join(w[0].upper() for w in name.split()[:2]),
     }
-    stats = {
-        "total_spent": "₹7,228",
-        "transaction_count": 8,
-        "top_category": "Food",
-    }
-    transactions = [
-        {"date": "25 Apr", "title": "Dinner with family",   "category": "Food",          "amount": "₹1,350"},
-        {"date": "18 Apr", "title": "New shoes",            "category": "Shopping",      "amount": "₹2,499"},
-        {"date": "15 Apr", "title": "Lunch with team",      "category": "Food",          "amount": "₹380"},
-        {"date": "10 Apr", "title": "Electricity bill",     "category": "Utilities",     "amount": "₹1,200"},
-        {"date": "05 Apr", "title": "Netflix subscription", "category": "Entertainment", "amount": "₹649"},
-        {"date": "03 Apr", "title": "Metro card recharge",  "category": "Transport",     "amount": "₹200"},
-    ]
-    categories = [
-        {"name": "Shopping",      "amount": "₹2,499", "percent": 35},
-        {"name": "Food",          "amount": "₹1,730", "percent": 24},
-        {"name": "Utilities",     "amount": "₹1,200", "percent": 17},
-        {"name": "Entertainment", "amount": "₹649",   "percent": 9},
-        {"name": "Healthcare",    "amount": "₹500",   "percent": 7},
-        {"name": "Transport",     "amount": "₹200",   "percent": 3},
-    ]
+    stats = get_summary_stats(session["user_id"])
+    transactions = get_recent_transactions(session["user_id"])
+    categories = get_category_breakdown(session["user_id"])
     return render_template("profile.html", user=user, stats=stats,
                            transactions=transactions, categories=categories)
 

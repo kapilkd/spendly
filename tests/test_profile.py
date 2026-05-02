@@ -17,9 +17,9 @@ def test_profile_returns_200_when_logged_in(client):
 
 
 def test_profile_shows_user_name(client):
-    _login(client, name="Priya Sharma")
+    _login(client)
     response = client.get("/profile")
-    assert b"Priya Sharma" in response.data
+    assert b"Demo User" in response.data
 
 
 def test_profile_shows_stat_labels(client):
@@ -47,6 +47,6 @@ def test_profile_shows_category_breakdown(client):
 
 
 def test_profile_shows_avatar_initials(client):
-    _login(client, name="Arjun Kapoor")
+    _login(client)
     response = client.get("/profile")
-    assert b"AK" in response.data
+    assert b"DU" in response.data
