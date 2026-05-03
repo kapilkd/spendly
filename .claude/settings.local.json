@@ -6,7 +6,9 @@
       "mcp__sqlite__read_query",
       "mcp__sqlite__describe_table",
       "Bash(Get-ChildItem -Path \"D:\\\\claude\\\\expense-tracker\\\\templates\" -Filter \"*.html\")",
-      "Bash(Select-Object -ExpandProperty Name)"
+      "Bash(Select-Object -ExpandProperty Name)",
+      "mcp__github__get_me",
+      "mcp__github__search_repositories"
     ]
   }
 }
