@@ -38,6 +38,38 @@
         </div>
     </div>
 
+    {# ---- Date filter ---- #}
+    {% if error %}
+    <div class="filter-error">{{ error }}</div>
+    {% endif %}
+    <div class="filter-card">
+        <div class="filter-presets">
+            <button type="button" class="filter-preset-btn" onclick="applyPreset('7d')">Last 7 days</button>
+            <button type="button" class="filter-preset-btn" onclick="applyPreset('1m')">Last month</button>
+            <button type="button" class="filter-preset-btn" onclick="applyPreset('quarter')">Current quarter</button>
+        </div>
+        <form class="filter-form" method="get" action="{{ url_for('profile') }}">
+            <div class="filter-fields">
+                <div class="filter-field">
+                    <label for="from_date">From</label>
+                    <input type="date" id="from_date" name="from_date"
+                           class="form-input filter-date-input"
+                           value="{{ date_filter.from_date }}">
+                </div>
+                <div class="filter-field">
+                    <label for="to_date">To</label>
+                    <input type="date" id="to_date" name="to_date"
+                           class="form-input filter-date-input"
+                           value="{{ date_filter.to_date }}">
+                </div>
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn-primary filter-btn">Apply</button>
+                <a href="{{ url_for('profile') }}" class="btn-ghost filter-btn">Clear</a>
+            </div>
+        </form>
+    </div>
+
     {# ---- Two-column section ---- #}
     <div class="profile-grid">
 
@@ -103,5 +135,48 @@
 {% endblock %}
 
 {% block scripts %}
-<script>lucide.createIcons();</script>
+<script>
+lucide.createIcons();
+
+// Format a local Date as YYYY-MM-DD (avoids UTC-offset shifting toISOString can cause)
+function fmtDate(d) {
+    return [
+        d.getFullYear(),
+        String(d.getMonth() + 1).padStart(2, '0'),
+        String(d.getDate()).padStart(2, '0'),
+    ].join('-');
+}
+
+function applyPreset(preset) {
+    const today = new Date();
+    let from, to = fmtDate(today);
+
+    if (preset === '7d') {
+        const d = new Date(today);
+        d.setDate(d.getDate() - 6);
+        from = fmtDate(d);
+    } else if (preset === '1m') {
+        const first = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        const last  = new Date(today.getFullYear(), today.getMonth(), 0);
+        from = fmtDate(first);
+        to   = fmtDate(last);
+    } else if (preset === 'quarter') {
+        const qStart = Math.floor(today.getMonth() / 3) * 3;
+        from = fmtDate(new Date(today.getFullYear(), qStart, 1));
+    }
+
+    document.getElementById('from_date').value = from;
+    document.getElementById('to_date').value   = to;
+    document.querySelector('.filter-form').submit();
+}
+
+// Open the native date picker when clicking anywhere on the input, not just the icon
+document.querySelectorAll('.filter-date-input').forEach(function(input) {
+    input.addEventListener('click', function() {
+        if (typeof this.showPicker === 'function') {
+            try { this.showPicker(); } catch (_) {}
+        }
+    });
+});
+</script>
 {% endblock %}

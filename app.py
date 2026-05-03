@@ -7,6 +7,8 @@ app = Flask(__name__)
 app.config['DATABASE'] = 'expense_tracker.db'
 app.secret_key = "spendly-dev-secret"  # replace with env var in production
 
+_DATE_RE = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+
 from database.db import (
     close_db, init_db, seed_db, create_user, get_user_by_email,
     get_user_by_id, get_recent_transactions, get_summary_stats, get_category_breakdown,
@@ -109,6 +111,20 @@ def profile():
     if not session.get("user_id"):
         return redirect(url_for("login"))
 
+    from_date = request.args.get("from_date", "").strip() or None
+    to_date   = request.args.get("to_date",   "").strip() or None
+
+    if from_date and not _DATE_RE.match(from_date):
+        from_date = None
+    if to_date and not _DATE_RE.match(to_date):
+        to_date = None
+
+    error = None
+    if from_date and to_date and from_date > to_date:
+        error     = "Start date must be on or before the end date — showing all transactions."
+        from_date = None
+        to_date   = None
+
     db_user = get_user_by_id(session["user_id"])
     name = db_user["name"] if db_user else session.get("user_name", "User")
     user = {
@@ -117,11 +133,16 @@ def profile():
         "member_since": db_user["member_since"] if db_user else "",
         "initials":     "".join(w[0].upper() for w in name.split()[:2]),
     }
-    stats = get_summary_stats(session["user_id"])
-    transactions = get_recent_transactions(session["user_id"])
-    categories = get_category_breakdown(session["user_id"])
-    return render_template("profile.html", user=user, stats=stats,
-                           transactions=transactions, categories=categories)
+    stats        = get_summary_stats(session["user_id"], from_date=from_date, to_date=to_date)
+    transactions = get_recent_transactions(session["user_id"], from_date=from_date, to_date=to_date)
+    categories   = get_category_breakdown(session["user_id"], from_date=from_date, to_date=to_date)
+    return render_template(
+        "profile.html",
+        user=user, stats=stats,
+        transactions=transactions, categories=categories,
+        date_filter={"from_date": from_date or "", "to_date": to_date or ""},
+        error=error,
+    )
 
 
 @app.route("/expenses/add")
