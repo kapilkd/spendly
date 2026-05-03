@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics — Spendly{% endblock %}
+
+{% block head %}
+<style>
+    .analytics-section {
+        padding: 5rem 2rem 6rem;
+        max-width: var(--max-width);
+        margin: 0 auto;
+    }
+
+    .analytics-hero {
+        text-align: center;
+        max-width: 620px;
+        margin: 0 auto 4rem;
+    }
+
+    .coming-soon-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        background: var(--accent-2-light);
+        color: var(--accent-2);
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 0.4rem 1.1rem;
+        border-radius: 999px;
+        margin-bottom: 1.75rem;
+        border: 1px solid #f0ddb8;
+    }
+
+    .analytics-title {
+        font-family: var(--font-display);
+        font-size: clamp(2.2rem, 5vw, 3.5rem);
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 1.25rem;
+    }
+
+    .analytics-title-accent {
+        color: var(--accent);
+        display: block;
+    }
+
+    .analytics-subtitle {
+        font-size: 1.05rem;
+        color: var(--ink-muted);
+        line-height: 1.7;
+        margin-bottom: 2.5rem;
+    }
+
+    .analytics-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .preview-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 3.5rem;
+    }
+
+    .preview-card {
+        background: var(--paper-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .preview-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--accent);
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+
+    .preview-card:hover::before { opacity: 1; }
+
+    .preview-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: var(--radius-sm);
+        background: var(--accent-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        margin-bottom: 1.25rem;
+    }
+
+    .preview-icon-warm {
+        background: var(--accent-2-light);
+        color: var(--accent-2);
+    }
+
+    .preview-card-title {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        color: var(--ink);
+        margin-bottom: 0.6rem;
+    }
+
+    .preview-card-body {
+        font-size: 0.9rem;
+        color: var(--ink-muted);
+        line-height: 1.7;
+    }
+
+    .preview-card-tag {
+        display: inline-block;
+        margin-top: 1.25rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--ink-faint);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .mock-chart-section {
+        background: var(--paper-warm);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 2rem 2.5rem;
+    }
+
+    .mock-chart-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+
+    .mock-chart-title {
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        color: var(--ink);
+    }
+
+    .mock-chart-blur-badge {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.8rem;
+        color: var(--ink-faint);
+        background: var(--paper-card);
+        border: 1px solid var(--border);
+        padding: 0.3rem 0.9rem;
+        border-radius: 999px;
+    }
+
+    .mock-bars-preview {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 0.6rem;
+        align-items: flex-end;
+        height: 120px;
+    }
+
+    .mock-bar-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.4rem;
+        height: 100%;
+        justify-content: flex-end;
+    }
+
+    .mock-bar-fill {
+        width: 100%;
+        border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+        background: var(--border);
+        opacity: 0.5;
+    }
+
+    .mock-bar-fill.active {
+        background: var(--accent);
+        opacity: 1;
+    }
+
+    .mock-bar-label {
+        font-size: 0.7rem;
+        color: var(--ink-faint);
+    }
+
+    @media (max-width: 900px) {
+        .preview-grid { grid-template-columns: 1fr; }
+        .mock-bars-preview { grid-template-columns: repeat(4, 1fr); }
+        .mock-bars-preview .mock-bar-col:nth-child(n+5) { display: none; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="analytics-section">
+
+    <div class="analytics-hero">
+        <span class="coming-soon-badge">
+            <i data-lucide="clock" style="width:13px;height:13px;"></i>
+            Coming Soon
+        </span>
+        <h1 class="analytics-title">
+            Know exactly where
+            <span class="analytics-title-accent">your money goes</span>
+        </h1>
+        <p class="analytics-subtitle">
+            Powerful charts and insights to help you understand your spending patterns,
+            track trends over time, and make smarter financial decisions.
+        </p>
+        <div class="analytics-actions">
+            <a href="{{ url_for('profile') }}" class="btn-primary">Back to Dashboard</a>
+            <a href="{{ url_for('landing') }}" class="btn-ghost">Learn more</a>
+        </div>
+    </div>
+
+    <div class="preview-grid">
+        <div class="preview-card">
+            <div class="preview-icon">
+                <i data-lucide="trending-up" style="width:20px;height:20px;"></i>
+            </div>
+            <h3 class="preview-card-title">Spending Trends</h3>
+            <p class="preview-card-body">
+                Visualise how your spending changes week over week and month over month
+                with clear, interactive line charts.
+            </p>
+            <span class="preview-card-tag">Charts &amp; Graphs</span>
+        </div>
+
+        <div class="preview-card">
+            <div class="preview-icon preview-icon-warm">
+                <i data-lucide="pie-chart" style="width:20px;height:20px;"></i>
+            </div>
+            <h3 class="preview-card-title">Category Breakdown</h3>
+            <p class="preview-card-body">
+                See which categories are eating into your budget the most with
+                a detailed percentage breakdown and colour-coded charts.
+            </p>
+            <span class="preview-card-tag">Insights</span>
+        </div>
+
+        <div class="preview-card">
+            <div class="preview-icon">
+                <i data-lucide="calendar-days" style="width:20px;height:20px;"></i>
+            </div>
+            <h3 class="preview-card-title">Monthly Reports</h3>
+            <p class="preview-card-body">
+                Auto-generated monthly summaries compare your spending against previous
+                months so you always know if you're on track.
+            </p>
+            <span class="preview-card-tag">Reports</span>
+        </div>
+    </div>
+
+    <div class="mock-chart-section">
+        <div class="mock-chart-header">
+            <span class="mock-chart-title">Monthly Spending — Preview</span>
+            <span class="mock-chart-blur-badge">
+                <i data-lucide="lock" style="width:11px;height:11px;"></i>
+                Unlocks soon
+            </span>
+        </div>
+        <div class="mock-bars-preview">
+            <div class="mock-bar-col">
+                <div class="mock-bar-fill" style="height:45%;"></div>
+                <span class="mock-bar-label">Oct</span>
+            </div>
+            <div class="mock-bar-col">
+                <div class="mock-bar-fill" style="height:60%;"></div>
+                <span class="mock-bar-label">Nov</span>
+            </div>
+            <div class="mock-bar-col">
+                <div class="mock-bar-fill" style="height:35%;"></div>
+                <span class="mock-bar-label">Dec</span>
+            </div>
+            <div class="mock-bar-col">
+                <div class="mock-bar-fill" style="height:75%;"></div>
+                <span class="mock-bar-label">Jan</span>
+            </div>
+            <div class="mock-bar-col">
+                <div class="mock-bar-fill" style="height:55%;"></div>
+                <span class="mock-bar-label">Feb</span>
+            </div>
+            <div class="mock-bar-col">
+                <div class="mock-bar-fill" style="height:80%;"></div>
+                <span class="mock-bar-label">Mar</span>
+            </div>
+            <div class="mock-bar-col">
+                <div class="mock-bar-fill active" style="height:65%;"></div>
+                <span class="mock-bar-label">Apr</span>
+            </div>
+        </div>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+</script>
+{% endblock %}

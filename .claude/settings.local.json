@@ -2,7 +2,11 @@
   "permissions": {
     "allow": [
       "Bash(python -c \"from werkzeug.security import generate_password_hash, check_password_hash; print\\(generate_password_hash\\('test123'\\)\\)\")",
-      "Bash(python *)"
+      "Bash(python *)",
+      "mcp__sqlite__read_query",
+      "mcp__sqlite__describe_table",
+      "Bash(Get-ChildItem -Path \"D:\\\\claude\\\\expense-tracker\\\\templates\" -Filter \"*.html\")",
+      "Bash(Select-Object -ExpandProperty Name)"
     ]
   }
 }
