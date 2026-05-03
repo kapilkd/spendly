@@ -8,7 +8,14 @@
       "Bash(Get-ChildItem -Path \"D:\\\\claude\\\\expense-tracker\\\\templates\" -Filter \"*.html\")",
       "Bash(Select-Object -ExpandProperty Name)",
       "mcp__github__get_me",
-      "mcp__github__search_repositories"
+      "mcp__github__search_repositories",
+      "Bash(venv/Scripts/python.exe -m pytest tests/test_07-add-expense.py -v)",
+      "Bash(venv/Scripts/pip.exe install *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(gh pr *)",
+      "mcp__github__create_pull_request"
     ]
   }
 }
