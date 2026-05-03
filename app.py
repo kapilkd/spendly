@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import re
 import sqlite3
+from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
@@ -8,10 +9,15 @@ app.config['DATABASE'] = 'expense_tracker.db'
 app.secret_key = "spendly-dev-secret"  # replace with env var in production
 
 _DATE_RE = re.compile(r'^\d{4}-\d{2}-\d{2}$')
+_CATEGORIES = [
+    "Food", "Transport", "Entertainment", "Utilities",
+    "Shopping", "Healthcare", "Bills", "Education", "Other",
+]
 
 from database.db import (
     close_db, init_db, seed_db, create_user, get_user_by_email,
     get_user_by_id, get_recent_transactions, get_summary_stats, get_category_breakdown,
+    create_expense,
 )
 
 app.teardown_appcontext(close_db)
@@ -152,9 +158,48 @@ def analytics():
     return render_template("analytics.html")
 
 
-@app.route("/expenses/add")
+@app.route("/expenses/add", methods=["GET", "POST"])
 def add_expense():
-    return "Add expense — coming in Step 7"
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    if request.method == "GET":
+        return render_template("add_expense.html", categories=_CATEGORIES, form={})
+
+    title    = request.form.get("title", "").strip()
+    amount   = request.form.get("amount", "").strip()
+    category = request.form.get("category", "").strip()
+    date     = request.form.get("date", "").strip()
+    note     = request.form.get("note", "").strip()
+
+    form = {"title": title, "amount": amount, "category": category, "date": date, "note": note}
+
+    def bad(msg):
+        return render_template("add_expense.html", error=msg, categories=_CATEGORIES, form=form)
+
+    if not title:
+        return bad("Title is required.")
+    if len(title) > 200:
+        return bad("Title must be 200 characters or fewer.")
+    try:
+        amount_f = float(amount)
+        if amount_f <= 0:
+            raise ValueError
+    except ValueError:
+        return bad("Amount must be a positive number.")
+    if not _DATE_RE.match(date):
+        return bad("Date must be in YYYY-MM-DD format.")
+    try:
+        datetime.strptime(date, "%Y-%m-%d")
+    except ValueError:
+        return bad("That date doesn't exist on the calendar.")
+    if category not in _CATEGORIES:
+        return bad("Please select a valid category.")
+    if note and len(note) > 1000:
+        return bad("Note must be 1000 characters or fewer.")
+
+    create_expense(session["user_id"], title, amount_f, category, date, note or None)
+    return redirect(url_for("profile"))
 
 
 @app.route("/expenses/<int:id>/edit")

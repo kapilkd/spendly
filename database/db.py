@@ -132,6 +132,15 @@ def create_user(name, email, password_hash):
     db.commit()
 
 
+def create_expense(user_id, title, amount, category, date, note):
+    db = get_db()
+    db.execute(
+        "INSERT INTO expenses (user_id, title, amount, category, date, note) VALUES (?, ?, ?, ?, ?, ?)",
+        (user_id, title, amount, category, date, note)
+    )
+    db.commit()
+
+
 def get_recent_transactions(user_id, limit=10, from_date=None, to_date=None):
     clause, date_params = _date_clause(from_date, to_date)
     rows = get_db().execute(
