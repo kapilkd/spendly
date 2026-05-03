@@ -82,27 +82,38 @@ def get_user_by_email(email):
     ).fetchone()
 
 
-def get_summary_stats(user_id):
+def _date_clause(from_date, to_date):
+    if from_date and to_date:
+        return " AND date BETWEEN ? AND ?", [from_date, to_date]
+    if from_date:
+        return " AND date >= ?", [from_date]
+    if to_date:
+        return " AND date <= ?", [to_date]
+    return "", []
+
+
+def get_summary_stats(user_id, from_date=None, to_date=None):
     db = get_db()
+    clause, date_params = _date_clause(from_date, to_date)
     row = db.execute(
         """
         SELECT COALESCE(SUM(amount), 0) AS total_spent,
-               COUNT(*)                 AS transaction_count
+               COUNT(*) AS transaction_count
         FROM   expenses
         WHERE  user_id = ?
-        """,
-        (user_id,)
+        """
+        + clause,
+        [user_id] + date_params,
     ).fetchone()
     top_row = db.execute(
         """
         SELECT   category, SUM(amount) AS cat_total
         FROM     expenses
         WHERE    user_id = ?
-        GROUP BY category
-        ORDER BY cat_total DESC
-        LIMIT    1
-        """,
-        (user_id,)
+        """
+        + clause
+        + " GROUP BY category ORDER BY cat_total DESC LIMIT 1",
+        [user_id] + date_params,
     ).fetchone()
     top_category = top_row["category"] if top_row else "—"
     return {
@@ -121,16 +132,17 @@ def create_user(name, email, password_hash):
     db.commit()
 
 
-def get_recent_transactions(user_id, limit=10):
+def get_recent_transactions(user_id, limit=10, from_date=None, to_date=None):
+    clause, date_params = _date_clause(from_date, to_date)
     rows = get_db().execute(
         """
         SELECT date, title, category, amount
         FROM   expenses
         WHERE  user_id = ?
-        ORDER  BY date DESC, id DESC
-        LIMIT  ?
-        """,
-        (user_id, limit)
+        """
+        + clause
+        + " ORDER BY date DESC, id DESC LIMIT ?",
+        [user_id] + date_params + [limit],
     ).fetchall()
     return [
         {
@@ -160,17 +172,17 @@ def get_user_by_id(user_id):
     }
 
 
-def get_category_breakdown(user_id):
+def get_category_breakdown(user_id, from_date=None, to_date=None):
+    clause, date_params = _date_clause(from_date, to_date)
     rows = get_db().execute(
         """
-        SELECT   category,
-                 SUM(amount) AS amount
+        SELECT   category, SUM(amount) AS amount
         FROM     expenses
         WHERE    user_id = ?
-        GROUP BY category
-        ORDER BY amount DESC
-        """,
-        (user_id,)
+        """
+        + clause
+        + " GROUP BY category ORDER BY amount DESC",
+        [user_id] + date_params,
     ).fetchall()
     if not rows:
         return []
