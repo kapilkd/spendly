@@ -13,10 +13,13 @@
     <div class="profile-header">
         <div class="profile-avatar">{{ user.initials }}</div>
         <div class="profile-info">
-            <h1 class="profile-name">{{ user.name }}</h1>
-            <p class="profile-email">{{ user.email }}</p>
-            <p class="profile-since">Member since {{ user.member_since }}</p>
+            <span class="profile-name">{{ user.name }}</span>
+            <span class="profile-info-sep">·</span>
+            <span class="profile-email">{{ user.email }}</span>
+            <span class="profile-info-sep">·</span>
+            <span class="profile-since">Member since {{ user.member_since }}</span>
         </div>
+        <a href="{{ url_for('add_expense') }}" class="btn-primary profile-add-btn">+ Add Expense</a>
     </div>
 
     {# ---- Summary stats ---- #}
